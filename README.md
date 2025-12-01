@@ -1,14 +1,11 @@
-# Elektro-Server 
+# Example-Server 
 
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/arkitektio/mikro-server-next/)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/arkitektio/example-server/)
 ![Maintainer](https://img.shields.io/badge/maintainer-jhnnsrs-blue)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-
-Elektro is the Arkitekt go to solution for all things electrophysicioly.
+Example server implementation following the design principles of the [Arkitekt](https://arkitekt.live) framework. 
 
 > [!NOTE]  
-> What you are currently looking at is the next version of Elektro. Elektro is currently under development and not ready for production. If you are looking for the current version of Mikro, you can find it [here](https://github.com/arkitektio/elektro-server).
-
+> This is an example server to demonstrate the patterns and practices used in Arkitekt servers. It is not intended for production use and is just a reference implementation. It additionality serves as a starting point for developers looking to build their own Arkitekt-based servers and as a central github repository to discuss server-related issues and improvements.
 
 

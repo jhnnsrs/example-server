@@ -13,4 +13,4 @@ uv run python manage.py collectstatic --noinput
 
 # Start the first process
 echo "=> Starting Server"
-uv run daphne -b 0.0.0.0 -p 80 --websocket_timeout -1 elektro_server.asgi:application 
+uv run daphne -b 0.0.0.0 -p 80 --websocket_timeout -1 example_server.asgi:application 

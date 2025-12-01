@@ -1,7 +1,7 @@
 import pytest
 from core.models import Trace, Dataset
 from django.contrib.auth import get_user_model
-from elektro_server.schema import schema
+from example_server.schema import schema
 from guardian.shortcuts import get_perms
 from asgiref.sync import sync_to_async
 from kante.context import HttpContext

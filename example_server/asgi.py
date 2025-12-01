@@ -1,6 +1,6 @@
 import os
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "elektro_server.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "example_server.settings")
 from django.core.asgi import get_asgi_application
 # Initialize Django ASGI application early to ensure the AppRegistry
 # is populated before importing code that may import ORM models.

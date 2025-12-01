@@ -40,10 +40,10 @@ dev = [
 ]
 
 [tool.django-stubs]
-django_settings_module = "elektro_server.settings"
+django_settings_module = "example_server.settings"
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "elektro_server.settings_test"
+DJANGO_SETTINGS_MODULE = "example_server.settings_test"
 
 
 [tool.ruff]
