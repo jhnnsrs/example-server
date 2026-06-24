@@ -12,7 +12,7 @@ DATABASES["default"] = {
         "NAME": ":memory:",
     }
 }
-AUTHENTIKATE = {**AUTHENTIKATE, "STATIC_TOKENS": {"test": {"sub": "1"}}}
+AUTHENTIKATE = {**AUTHENTIKATE, "static_tokens": {"test": {"sub": "1"}}}
 
 # Disable migrations for faster tests
 class DisableMigrations:
