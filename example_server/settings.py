@@ -16,7 +16,7 @@ from .configuration import Settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-conf = Settings()
+conf = Settings()  # Load the configuration from environment variables and config.yaml, #type: ignore
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django.contrib.postgres",
     "channels_redis",
     "guardian",
     "simple_history",
@@ -49,49 +48,28 @@ INSTALLED_APPS = [
     "kante",
     "channels",
     "django_probes",
-    "taggit",
-    "core",
+    "demo",
     "health_check",  # required for health checks
     "health_check.db",  # stock Django health checkers
 ]
 
 
-STRAWBERRY_DJANGO = {
-    "USE_DEPRECATED_FILTERS": True,
-}
-
-
 AUTH_USER_MODEL = "authentikate.User"
 
-# S3_PUBLIC_DOMAIN = f"{conf.s3.public.host}:{conf.s3.public.port}"  # TODO: FIx
-AWS_ACCESS_KEY_ID = conf.datalayer.access_key
-AWS_SECRET_ACCESS_KEY = conf.datalayer.secret_key
-AWS_S3_ENDPOINT_URL = f"{conf.datalayer.protocol}://{conf.datalayer.host}:{conf.datalayer.port}"
-# AWS_S3_PUBLIC_ENDPOINT_URL = (
-#    f"{conf.minio.public.protocol}://{conf.minio.public.host}:{conf.minio.public.port}"
-# )
-AWS_S3_URL_PROTOCOL = f"{conf.datalayer.protocol}:"
-AWS_S3_FILE_OVERWRITE = False
-AWS_QUERYSTRING_EXPIRE = 3600
-AWS_S3_REGION_NAME = conf.datalayer.region
 
-ZARR_BUCKET = conf.datalayer.zarr.bucket
-PARQUET_BUCKET = conf.datalayer.zarr.bucket
-FILE_BUCKET = conf.datalayer.media.bucket
-MEDIA_BUCKET = conf.datalayer.media.bucket
+STRAWBERRY_DJANGO = {
+    "FIELD_DESCRIPTION_FROM_HELP_TEXT": True,
+    "TYPE_DESCRIPTION_FROM_MODEL_DOCSTRING": True,
+    "USE_DEPRECATED_FILTERS": False,
+    "DEFAULT_PK_FIELD_NAME": "id",
+}
 
-AWS_STORAGE_BUCKET_NAME = conf.datalayer.media.bucket
-AWS_DEFAULT_ACL = "private"
-AWS_S3_USE_SSL = True
-AWS_S3_SECURE_URLS = False
-
-GRAPHENE = {"SCHEMA": "core.schema.schema"}
 
 CHANNEL_LAYERS = {
     "default": {
         # This example app uses the Redis channel layer implementation channels_redis
         "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {"hosts": [(conf.redis.host, conf.redis.port)], "prefix": "mikro"},
+        "CONFIG": {"hosts": [(conf.redis.host, conf.redis.port)], "prefix": "example"},
     },
 }
 
@@ -175,6 +153,18 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTHENTIKATE = conf.authentikate.model_dump()
 
 
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f"redis://{conf.redis.host}:{conf.redis.port}/1",
+        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
+        "KEY_PREFIX": "example_server_cache",
+    }
+}
+
+CACHE_TTL_DEFAULT = 60 * 15
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -196,6 +186,3 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-
-INCREMENTER = "1"

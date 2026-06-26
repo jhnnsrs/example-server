@@ -2,15 +2,20 @@ from .settings import *  # noqa
 from .settings import DATABASES, AUTHENTIKATE
 import logging
 
+# In-memory SQLite keeps the test suite fast and dependency-free, which is all
+# the schema/config smoke tests need. Note: executing async GraphQL operations
+# that *write* to the DB will deadlock on SQLite (its single writer collides
+# with pytest-django's open transaction) — for those, run against a real
+# Postgres, as the alpaka service's test harness does.
 DATABASES["default"] = {
-    "ENGINE": "django.db.backends.sqlite3", 
+    "ENGINE": "django.db.backends.sqlite3",
     "NAME": ":memory:",
     "OPTIONS": {
         "timeout": 30,
     },
     "TEST": {
         "NAME": ":memory:",
-    }
+    },
 }
 AUTHENTIKATE = {**AUTHENTIKATE, "static_tokens": {"test": {"sub": "1"}}}
 

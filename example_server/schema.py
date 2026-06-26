@@ -1,65 +1,58 @@
-from kante.types import Info
-from typing import AsyncGenerator, List
+"""The GraphQL schema for the example service.
+
+A minimal schema over the ``demo`` app showing the three operation kinds —
+query, mutation and subscription — plus the arkitekt extensions:
+
+* ``AuthentikateExtension`` — authenticates the request from its bearer token
+  and exposes the user/organization/client on ``info.context.request``.
+* ``KoherentExtension`` — attributes every model write in a request to that
+  identity (provenance).
+* ``DjangoOptimizerExtension`` — batches/prefetches ORM access to avoid N+1s.
+"""
+
 import strawberry
-
-from core.datalayer import DatalayerExtension
-from strawberry import ID as StrawberryID
-from typing import Any, Type
-from core import types, models
-from core import mutations
-from core import queries
-from core import subscriptions
 import strawberry_django
-from koherent.strawberry.extension import KoherentExtension
-from core.render.objects import types as render_types
-from core.duck import DuckExtension
-from typing import Annotated
-from core.base_models.type.graphql.model import SynapticConnection, Exp2Synapse
-from core.base_models.type.graphql.model import ModelConfigModel
-from core.base_models.type.graphql.topology import Section
 from authentikate.strawberry.extension import AuthentikateExtension
+from koherent.strawberry.extension import KoherentExtension
 from strawberry_django.optimizer import DjangoOptimizerExtension
-import kante
 
-ID = Annotated[StrawberryID, strawberry.argument(description="The unique identifier of an object")]
+from demo import types
+from demo.graphql import mutations, queries, subscriptions
 
 
 @strawberry.type
 class Query:
-    """The root query type"""
-    
-    test: str = kante.field(resolver=queries.test, description="A simple test query that returns a string")
-    
-    
+    """The root query type."""
+
+    items: list[types.Item] = strawberry_django.field(description="List all items (paginated, filterable, orderable).")
+    item: types.Item = strawberry_django.field(resolver=queries.item, description="Get a single item by id.")
+
+
 @strawberry.type
 class Mutation:
-    """ The root mutation type"""
-    
-    create_test_model: types.TestModelType = kante.field(
-        resolver=mutations.create_test_model,
-        description="Create a test model instance",
-    )
-    
-    
+    """The root mutation type."""
+
+    create_item = strawberry_django.mutation(resolver=mutations.create_item, description="Create a new item.")
+    update_item = strawberry_django.mutation(resolver=mutations.update_item, description="Update an existing item.")
+    delete_item = strawberry_django.mutation(resolver=mutations.delete_item, description="Delete an item by id.")
+
+
 @strawberry.type
 class Subscription:
-    """The root subscription type"""
+    """The root subscription type."""
 
-    rois = strawberry.subscription(resolver=subscriptions.rois, description="Subscribe to real-time ROI updates")
-    traces = strawberry.subscription(resolver=subscriptions.traces, description="Subscribe to real-time image updates")
-    files = strawberry.subscription(resolver=subscriptions.files, description="Subscribe to real-time file updates")
+    items = strawberry.subscription(resolver=subscriptions.items, description="Stream create/update/delete events for items.")
 
 
-schema = strawberry.Schema(
+# A federation schema is required because the authentikate types (User,
+# Organization, …) are federated entities carrying ``@key`` directives.
+schema = strawberry.federation.Schema(
     query=Query,
-    subscription=Subscription,
     mutation=Mutation,
+    subscription=Subscription,
     extensions=[
-        KoherentExtension,
-        AuthentikateExtension,
         DjangoOptimizerExtension,
-        DatalayerExtension,
-        DuckExtension,
+        AuthentikateExtension,
+        KoherentExtension,
     ],
-    types=[SynapticConnection, Exp2Synapse],
 )

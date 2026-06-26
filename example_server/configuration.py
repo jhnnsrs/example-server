@@ -8,7 +8,7 @@ with a ``ValidationError`` if they are not supplied via config or environment.
 """
 
 import os
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic_settings import (
@@ -67,31 +67,6 @@ class RedisSettings(BaseModel):
     port: int = Field(default=6379, description="Redis port.")
 
 
-class DatalayerBucket(BaseModel):
-    """A single S3 bucket binding within the datalayer."""
-
-    model_config = ConfigDict(extra="allow")
-
-    bucket: str = Field(description="S3 bucket name.")
-
-
-class DatalayerSettings(BaseModel):
-    """S3 storage connection and buckets (the datalayer module; replaces the old top-level ``s3`` block)."""
-
-    model_config = ConfigDict(extra="allow")
-
-    access_key: str = Field(description="S3 access key. Secret — must be set.")
-    secret_key: str = Field(description="S3 secret key. Secret — must be set.")
-    host: Optional[str] = Field(default=None, description="S3 endpoint host.")
-    port: Optional[int] = Field(default=None, description="S3 endpoint port.")
-    protocol: str = Field(default="http", description="S3 endpoint protocol (http or https).")
-    region: str = Field(default="us-east-1", description="S3 region name.")
-    media: DatalayerBucket = Field(description="Bucket for media / general file storage. Required for this service.")
-    zarr: DatalayerBucket = Field(description="Bucket for Zarr arrays. Required for this service.")
-    parquet: Optional[DatalayerBucket] = Field(default=None, description="Bucket for Parquet tables.")
-    bigfile: Optional[DatalayerBucket] = Field(default=None, description="Bucket for large binary files.")
-
-
 class Settings(BaseSettings):
     """Top-level, validated configuration for the example service."""
 
@@ -101,7 +76,6 @@ class Settings(BaseSettings):
     postgres: PostgresSettings = Field(description="PostgreSQL connection.")
     redis: RedisSettings = Field(description="Redis connection.")
     authentikate: AuthentikateSettings = Field(description="Token-verification config (authentikate).")
-    datalayer: DatalayerSettings = Field(description="S3 storage connection and buckets.")
 
     @classmethod
     def settings_customise_sources(
