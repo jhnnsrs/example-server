@@ -17,7 +17,9 @@ DATABASES["default"] = {
         "NAME": ":memory:",
     },
 }
-AUTHENTIKATE = {**AUTHENTIKATE, "static_tokens": {"test": {"sub": "1"}}}
+# Django forces DEBUG=False under the test runner, and authentikate 3.0 refuses static
+# tokens when DEBUG is False. These are deliberate test fixtures, so opt in explicitly.
+AUTHENTIKATE = {**AUTHENTIKATE, "allow_static_tokens_in_production": True, "static_tokens": {"test": {"sub": "1"}}}
 
 # Disable migrations for faster tests
 class DisableMigrations:
