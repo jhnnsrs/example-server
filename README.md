@@ -63,7 +63,7 @@ with app:
     response = service.query(
         """
         query {
-            testModels {
+            items {
                 id
                 name
             }
